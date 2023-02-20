@@ -9,14 +9,15 @@ package catom.stack.project;
  */
 public class CustomStack<T> {
     
-    protected T[] stack = null;
+    private T[] stack = null;
+    private int curCount = -1;
 
     /**
      * Конструктор по умолчанию. 
      * Создаёт пустой стэк
     */
     public CustomStack(){
-        stack = (T[]) new Object[0];
+        stack = (T[]) new Object[10];
     }
     /**
      *Конструктор с параметрами.
@@ -29,56 +30,50 @@ public class CustomStack<T> {
     
     /**
      * Возвращает последний(верхний) элемент массива.
+     * @return Последний элемент или null при пустом стэке
     */
-    public T getElement(){
-        return stack[stack.length - 1];
+    public T peek(){
+        if(curCount > -1)
+            return stack[curCount];
+        return null;
     }
     
     /**
      * Добавляет элемент типа T в стэк
-    * @param element элемент который нужно положить в конец(вверх) стэка
+     * @param element элемент который нужно положить в конец(вверх) стэка
+     * @return Последний добавленый элемент
     */
-    public void Add(T element){
-        T[] oldStack = (T[]) new Object[stack.length]; 
-        System.arraycopy(stack, 0, oldStack, 0, stack.length);
+    public T push(T element){
         
-        stack = (T[]) new Object[stack.length + 1];
-        System.arraycopy(oldStack, 0, stack, 0, stack.length - 1);
+        curCount = curCount + 1;
+        if(curCount < stack.length - 1){
+            stack[curCount] = element;
+        } 
+        else {
+            T[] newStack = (T[]) new Object[stack.length+1];
+            System.arraycopy(stack, 0, newStack, 0, stack.length);
+            newStack[curCount] = element;
+            stack = newStack;
+        }
+        
+        return peek();
 
-        stack[stack.length - 1] = element;
     }
     /**
      * Безопасно удаляет верхний элемент из стэка.
      * Если стэк будет пуст, опирация прервётся.
     */
-    public void Delete(){
+    public T pop(){
         
-        if(stack.length == 0)
-            return;
-        
-        T[] oldStack = (T[]) new Object[stack.length]; 
-        System.arraycopy(stack, 0, oldStack, 0, stack.length);
-        stack = (T[]) new Object[stack.length - 1];
-        System.arraycopy(oldStack, 0, stack, 0, stack.length);
+        curCount = curCount - 1;
+        if(curCount == -1)
+            return null;
+        return peek();
     }
     /**
      * Функция очистки списка. Данная функция перезатирает список.
     */
     public void Clear(){
-        stack = (T[]) new Object[0];
-    }
-    /**
-     * Выводит весь стэк на экран.
-     * Вывод происходит в формате: [element_1, element_2, ... , element_n].
-    */
-    public void Show(){
-        System.out.print("[");
-        for(int i = 0; i < stack.length; i++)
-        {
-            System.out.print(stack[i]);
-            if(i + 1 != stack.length)
-                System.out.print(", ");
-        }
-        System.out.print("]");
+        stack = (T[]) new Object[10];
     }
 }
